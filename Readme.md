@@ -25,6 +25,16 @@ Quick MING/
 └── docker-compose.yaml     # Docker Compose configuration
 ```
 
+## Setting Node-Red Password Using bcrypt
+
+Node-Red requires the use of bcrypt for hashing passwords. To generate a bcrypt hash:
+
+- Visit an online bcrypt generator, like [bcrypt.online](https://bcrypt.online/).
+
+- Enter your desired password and select a Cost Factor. Generate the hash by clicking Generate Hash.
+
+- Copy the generated hash into the .env file for the NODE_RED_PASSWORD. Use single quotes around the hash (e.g. generatedhash'). This is important because Docker Compose interprets $ as a special character for variable substitution.
+
 ## Configuration
 
 1. Clone the repository:
@@ -52,11 +62,16 @@ Quick MING/
 The stack includes:
 
 - **Mosquitto:** MQTT broker on port `1883`.
+
 - **InfluxDB:** Time-series database on port `8086`.
+
 - **Node-RED:** Wiring tool for devices and online services on port `1880`.
+
 - **Grafana:** Monitoring and observability platform on port `3000`.
 
-## Credits
+- **Telegraf:** An agent for collecting, processing, aggregating, and writing metrics.
+
+## Attribution
 
 This project is possible thanks to the use and support from the following open-source projects:
 
@@ -68,6 +83,8 @@ This project is possible thanks to the use and support from the following open-s
 
 - [Grafana](https://grafana.com/): An analytics platform for all your metrics.
 
-- [mpous/ming](https://github.com/mpous/ming): The MING stack as used in this project is based on the work done by [Marc Pous](https://github.com/mpous). 
+- [Telegraf](https://github.com/influxdata/telegraf/): A server agent to collect metrics.
+
+- [mpous/ming](https://github.com/mpous/ming): The MING stack as used in this project is inspired by the work done by [Marc Pous](https://github.com/mpous).
 
 Each tool brings unique capabilities to any project, and their combination allows for a robust data monitoring solution. For their individual licensing terms, please refer to their respective websites or documentation.
