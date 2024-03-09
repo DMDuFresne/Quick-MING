@@ -3,7 +3,7 @@ version: "3.7"
 services:
 
   ming-m:
-    build: ./mosquitto/docker
+    build: ./mosquitto
     image: my-ming-mosquitto
     container_name: ming-mosquitto
     hostname: mosquitto
