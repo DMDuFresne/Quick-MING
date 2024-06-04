@@ -5,12 +5,13 @@ This repository provides a rapid deployment setup for the MING stack: **MQTT, In
 ## Prerequisites
 
 Before you begin, ensure you have the following:
+
 - Docker and Docker Compose installed on your system.
 - A fundamental understanding of Docker and containerization concepts.
 
 ## Project Structure
 
-```
+```markdown
 Quick MING/
 │
 ├── mosquitto               # MQTT Broker configurations
@@ -25,16 +26,6 @@ Quick MING/
 └── docker-compose.yaml     # Docker Compose configuration
 ```
 
-## Setting Node-Red Password Using bcrypt
-
-Node-Red requires the use of bcrypt for hashing passwords. To generate a bcrypt hash:
-
-- Visit an online bcrypt generator, like [bcrypt.online](https://bcrypt.online/).
-
-- Enter your desired password and select a Cost Factor. Generate the hash by clicking Generate Hash.
-
-- Copy the generated hash into the .env file for the NODE_RED_PASSWORD. Use single quotes around the hash (e.g. generatedhash'). This is important because Docker Compose interprets $ as a special character for variable substitution.
-
 ## Configuration
 
 1. Clone the repository:
@@ -43,7 +34,7 @@ Node-Red requires the use of bcrypt for hashing passwords. To generate a bcrypt 
     git clone https://github.com/DMDuFresne/Quick-MING.git
     ```
 
-2. Rename  `example.env` to ` .env` and configure the environment variables according to your setup.
+2. Rename  `example.env` to `.env` and configure the environment variables according to your setup.
 
 3. Ensure ports in `docker-compose.yaml` are not in use or change them accordingly.
 

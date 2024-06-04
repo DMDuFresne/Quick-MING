@@ -1,81 +1,107 @@
 
 version: "3.8"
-
-x-default-logging:
-  &default-logging
-  logging:
-    options:
-      max-size: '100m'
-      max-file: '5'
-    driver: json-file
-
 services:
 
-  # Mosquitto - MQTT Broker
-  mosquitto:
-    <<: *default-logging
+  ming-m:
     build: ./mosquitto
-    image: workorder-mosquitto
-    container_name: workorder-mosquitto
-    hostname: mosquitto
     restart: unless-stopped
+    image: ming-mosquitto
+    container_name: ming-mosquitto
+    hostname: mosquitto
     ports:
       - "1883:1883"
       - "9001:9001"
     networks:
-      - workorder-network
+      - ming-network
     volumes:
-      - mosquitto-config:/mosquitto/config:rw
-      - mosquitto-data:/mosquitto/data:rw
-      - mosquitto-log:/mosquitto/log:rw
+      - ming-m-config:/mosquitto/config:rw
+      - ming-m-data:/mosquitto/data:rw
+      - ming-m-log:/mosquitto/log:rw
     environment:
       MOSQUITTO_USERNAME: ${MOSQUITTO_USERNAME:-admin}
       MOSQUITTO_PASSWORD: ${MOSQUITTO_PASSWORD:-password}
 
-  # Node Red - Low Code Platform
-  nodered:
-    <<: *default-logging
+  ming-i:
+    image: influxdb:latest
+    container_name: ming-influxdb
+    hostname: influxdb
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    networks:
+      - ming-network
+    volumes:
+      - ming-i-data:/var/lib/influxdb2
+      - ming-i-config:/etc/influxdb2
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${DOCKER_INFLUXDB_INIT_USERNAME:-admin}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${DOCKER_INFLUXDB_INIT_PASSWORD:-password}
+      DOCKER_INFLUXDB_INIT_ORG: ${DOCKER_INFLUXDB_INIT_ORG:-demo}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${DOCKER_INFLUXDB_INIT_BUCKET:-demo}
+      DOCKER_INFLUXDB_INIT_RETENTION: ${DOCKER_INFLUXDB_INIT_RETENTION:-0}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN:-demo}
+
+  ming-n:
     build: ./node-red
     restart: unless-stopped
-    container_name: workorder-frontend
-    hostname: frontend
+    container_name: ming-nodered
+    hostname: nodered
     ports:
       - 1880:1880
     networks:
-      - workorder-network
+      - ming-network
     volumes:
-      - nodered-data:/data
+      - ming-n-data:/data
     environment:
       TZ: ${TIMEZONE}
       NODE_RED_USERNAME: ${NODE_RED_USERNAME:-admin}
       NODE_RED_PASSWORD: ${NODE_RED_PASSWORD:-password}
 
-  # Postgres - SQL Database
-  postgres:
-    <<: *default-logging
-    image: postgres:${POSTGRES_VERSION:-latest}
+  ming-g:
+    image: grafana/grafana:latest
+    container_name: ming-grafana
+    hostname: grafana
     restart: unless-stopped
-    container_name: workorder-database
-    hostname: database
     ports:
-      - "5432:5432"
+      - "3000:3000"
     networks:
-      - workorder-network
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-iiot}
-      POSTGRES_USER: ${POSTGRES_USER:-admin}
-      POSTGRES_PASSWORD: ${POSTGRES_USER:-admin}
+      - ming-network
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database/init:/docker-entrypoint-initdb.d
+      - ming-g-data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-password}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+
+  ming-t:
+    build: ./telegraf
+    container_name: ming-telegraf
+    hostname: telegraf
+    networks:
+      - ming-network
+    volumes:
+      - ming-t-config:/etc/telegraf:ro
+    environment:
+      DOCKER_INFLUXDB_INIT_ORG: ${DOCKER_INFLUXDB_INIT_ORG:-demo}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${DOCKER_INFLUXDB_INIT_BUCKET:-demo}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN:-demo}
+      MOSQUITTO_USERNAME: ${MOSQUITTO_USERNAME:-admin}
+      MOSQUITTO_PASSWORD: ${MOSQUITTO_PASSWORD:-password}
+      TELEGRAF_TOPIC: ${TELEGRAF_TOPIC:-telegraf/ingest/#}
+    depends_on: 
+      - ming-m
+      - ming-i
 
 volumes:
-
-  mosquitto-data:
-  mosquitto-config:
-  mosquitto-log:
-  nodered-data:
-  postgres_data:
+  ming-m-data:
+  ming-m-config:
+  ming-m-log:
+  ming-i-data:
+  ming-i-config:
+  ming-n-data:
+  ming-g-data:
+  ming-t-config:
 
 networks:
-  workorder-network:
+  ming-network:
