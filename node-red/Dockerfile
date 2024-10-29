@@ -2,15 +2,15 @@ FROM nodered/node-red:latest
 
 USER root
 
-COPY package.json .
-COPY hash-password.js .
-COPY entrypoint.sh /entrypoint.sh
+COPY --chmod=0644 package.json .
+COPY --chmod=0644 hash-password.js .
+COPY --chmod=0755 entrypoint.sh /entrypoint.sh
 
-COPY settings.js /data/settings.js
-COPY flows.json /data/flows.json
+COPY --chmod=0644 settings.js /data/settings.js
+COPY --chmod=0644 flows.json /data/flows.json
 
 RUN npm install --unsafe-perm --no-update-notifier --no-fund --only=production bcryptjs
-RUN chmod +x /entrypoint.sh
+#RUN chmod +x /entrypoint.sh
 
 USER node-red
 
