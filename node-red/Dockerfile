@@ -13,4 +13,6 @@ RUN rm -rf /data/.npm
 
 USER node-red
 
+RUN npm i
+
 ENTRYPOINT ["/entrypoint.sh"]

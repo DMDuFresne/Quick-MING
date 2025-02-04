@@ -1,2 +1,2 @@
 FROM telegraf:latest
-COPY telegraf.conf /etc/telegraf/telegraf.conf
+COPY --chmod=0644 telegraf.conf /etc/telegraf/telegraf.conf

@@ -1,15 +1,14 @@
 {
     "name": "ming-node-red",
     "description": "Node Red in the MING Stack",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "node-red": "~3.1.6",
+	"node-red": "~4.0.8",
         "node-red-contrib-influxdb": "~0.7.0",
         "@flowfuse/node-red-dashboard": "~0.10.2",
         "@flowfuse/node-red-function-gpt": "~0.4.0",
         "node-red-contrib-moment": "5.0.0",
         "node-red-contrib-average": "0.1.7"
-
     }
 }
